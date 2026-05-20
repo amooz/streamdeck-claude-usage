@@ -1,3 +1,4 @@
+import { isSubscriptionTier, type SubscriptionTier, tierDenominator } from "../tiers.js";
 import type { DisplayConfig, DisplayMode, MetricField, MetricKey, ModelFamily, WindowKey } from "../types.js";
 import { DISPLAY_MODES, METRIC_FIELDS, MODEL_FAMILIES, WINDOW_KEYS } from "../types.js";
 
@@ -21,6 +22,7 @@ export type UsageButtonSettings = {
 	label?: string | null;
 	refreshSeconds?: number;
 	adminApiKey?: string;
+	tier?: SubscriptionTier;
 };
 
 export type ResolvedSettings = {
@@ -33,6 +35,7 @@ export type ResolvedSettings = {
 	label: string | null;
 	refreshSeconds: number;
 	adminApiKey: string | null;
+	tier: SubscriptionTier;
 };
 
 export const DEFAULTS: ResolvedSettings = {
@@ -44,7 +47,8 @@ export const DEFAULTS: ResolvedSettings = {
 	denominator: null,
 	label: null,
 	refreshSeconds: 60,
-	adminApiKey: null
+	adminApiKey: null,
+	tier: "max-20x"
 };
 
 function pick<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
@@ -61,26 +65,34 @@ function pickString(value: unknown, fallback: string | null): string | null {
 
 export function resolveSettings(raw: UsageButtonSettings | undefined | null): ResolvedSettings {
 	const s = raw ?? {};
+	const metric: MetricKey = {
+		window: pick(s.metricWindow, WINDOW_KEYS, DEFAULTS.metric.window),
+		model:
+			s.metricModel === "all" ? "all" : pick(s.metricModel, MODEL_FAMILIES, DEFAULTS.metric.model as ModelFamily),
+		field: pick(s.metricField, METRIC_FIELDS, DEFAULTS.metric.field)
+	};
+	const tier: SubscriptionTier = isSubscriptionTier(s.tier) ? s.tier : DEFAULTS.tier;
+
+	// Explicit user denominator wins; otherwise consult the tier table for
+	// session5h / weekly windows. Other windows have no tier-based default.
+	let denominator: number | null = DEFAULTS.denominator;
+	if (typeof s.denominator === "number" && Number.isFinite(s.denominator) && s.denominator > 0) {
+		denominator = s.denominator;
+	} else if (metric.window === "session5h" || metric.window === "weekly") {
+		denominator = tierDenominator(tier, metric.window, metric.model);
+	}
+
 	return {
 		displayMode: pick(s.displayMode, DISPLAY_MODES, DEFAULTS.displayMode),
 		source: pick(s.source, DATA_SOURCES, DEFAULTS.source),
 		project: pickString(s.project, null) ?? DEFAULTS.project,
 		projectsRoot: pickString(s.projectsRoot, DEFAULTS.projectsRoot),
-		metric: {
-			window: pick(s.metricWindow, WINDOW_KEYS, DEFAULTS.metric.window),
-			model:
-				s.metricModel === "all"
-					? "all"
-					: pick(s.metricModel, MODEL_FAMILIES, DEFAULTS.metric.model as ModelFamily),
-			field: pick(s.metricField, METRIC_FIELDS, DEFAULTS.metric.field)
-		},
-		denominator:
-			typeof s.denominator === "number" && Number.isFinite(s.denominator) && s.denominator > 0
-				? s.denominator
-				: DEFAULTS.denominator,
+		metric,
+		denominator,
 		label: pickString(s.label, DEFAULTS.label),
 		refreshSeconds: pickNumber(s.refreshSeconds, DEFAULTS.refreshSeconds),
-		adminApiKey: pickString(s.adminApiKey, DEFAULTS.adminApiKey)
+		adminApiKey: pickString(s.adminApiKey, DEFAULTS.adminApiKey),
+		tier
 	};
 }
 

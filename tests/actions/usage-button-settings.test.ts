@@ -3,10 +3,16 @@ import { describe, expect, it } from "vitest";
 import { DEFAULTS, resolveSettings, toDisplayConfig } from "../../src/actions/usage-button-settings.js";
 
 describe("resolveSettings", () => {
-	it("returns full defaults when payload is null or undefined", () => {
-		expect(resolveSettings(null)).toEqual(DEFAULTS);
-		expect(resolveSettings(undefined)).toEqual(DEFAULTS);
-		expect(resolveSettings({})).toEqual(DEFAULTS);
+	it("returns default-shaped settings when payload is null or undefined (with tier-table denominator)", () => {
+		const r = resolveSettings(null);
+		expect(r.displayMode).toBe(DEFAULTS.displayMode);
+		expect(r.source).toBe(DEFAULTS.source);
+		expect(r.tier).toBe(DEFAULTS.tier);
+		expect(r.metric).toEqual(DEFAULTS.metric);
+		// Default tier (max-20x) + default metric (session5h opus) -> tier-table denominator.
+		expect(r.denominator).toBe(2_000_000);
+		expect(resolveSettings(undefined)).toEqual(r);
+		expect(resolveSettings({})).toEqual(r);
 	});
 
 	it("applies every documented user-settable field", () => {
@@ -47,13 +53,15 @@ describe("resolveSettings", () => {
 			metricModel: "gpt" as unknown as "opus",
 			metricField: "vibes" as unknown as "outputTokens",
 			refreshSeconds: -5,
-			denominator: -10
+			denominator: -10,
+			tier: "custom"
 		});
 		expect(r.displayMode).toBe(DEFAULTS.displayMode);
 		expect(r.source).toBe(DEFAULTS.source);
 		expect(r.metric).toEqual(DEFAULTS.metric);
 		expect(r.refreshSeconds).toBe(DEFAULTS.refreshSeconds);
-		expect(r.denominator).toBe(DEFAULTS.denominator);
+		// 'custom' tier has no defaults, so an invalid explicit denominator falls back to null.
+		expect(r.denominator).toBeNull();
 	});
 
 	it("treats empty strings as missing", () => {
@@ -62,6 +70,37 @@ describe("resolveSettings", () => {
 		expect(r.label).toBeNull();
 		expect(r.adminApiKey).toBeNull();
 		expect(r.projectsRoot).toBeNull();
+	});
+});
+
+describe("tier-driven denominator", () => {
+	it("auto-fills denominator from the tier table when none is provided", () => {
+		const r = resolveSettings({
+			tier: "max-20x",
+			metricWindow: "session5h",
+			metricModel: "opus"
+		});
+		expect(r.denominator).toBe(2_000_000);
+	});
+
+	it("prefers an explicit user denominator over the tier table", () => {
+		const r = resolveSettings({
+			tier: "max-20x",
+			metricWindow: "session5h",
+			metricModel: "opus",
+			denominator: 999
+		});
+		expect(r.denominator).toBe(999);
+	});
+
+	it("leaves denominator null for windows without tier defaults", () => {
+		const r = resolveSettings({ tier: "max-20x", metricWindow: "today" });
+		expect(r.denominator).toBeNull();
+	});
+
+	it("leaves denominator null for tiers without session caps", () => {
+		const r = resolveSettings({ tier: "api-only", metricWindow: "session5h", metricModel: "opus" });
+		expect(r.denominator).toBeNull();
 	});
 });
 
