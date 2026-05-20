@@ -6,13 +6,13 @@ Each button shows one Claude usage metric — tokens, requests, cache hit, etc. 
 
 ## Status
 
-**Beta.** Wire is end-to-end working: real-time polling, three render modes, two data sources, subscription-tier defaults, error tile on failures. Numbers from the local-logs source are reconstructions of Claude Code's own JSONL transcripts and are marked with a leading `~` to keep them visually distinct from authoritative Admin-API numbers.
+**Beta — needs in-app smoke test.** All code paths land: polling, three render modes, two data sources, subscription-tier defaults, error tile on failures. The 131-test suite covers every pure module above 90% branches; the action's actual interaction with Stream Deck (Property Inspector binding, `setImage` round-trip, decorator registration) is verified manually. Numbers from local-logs are reconstructions of Claude Code's JSONL transcripts and display with a leading `~`.
 
 ## Data sources
 
 Each button picks one in the Property Inspector.
 
-- **Local Claude Code logs.** Reads `~/.claude/projects/<encoded-project>/*.jsonl`. No API key needed; works for Pro / Max subscribers using Claude Code. The 5-hour and weekly session metrics are reconstructed via a gap heuristic — close to what Anthropic enforces server-side but not byte-perfect. All values display with `~`.
+- **Local Claude Code logs.** Reads `~/.claude/projects/<encoded-project>/*.jsonl`. No API key needed; works for Pro / Max subscribers using Claude Code. The 5-hour session metric is reconstructed via a gap heuristic against your local JSONL — close to what Anthropic enforces server-side but not byte-perfect. Weekly is a straight rolling-7-day sum. All values display with a leading `~` to make the estimate explicit.
 - **Anthropic Admin API.** Pulls authoritative usage and cost data from `api.anthropic.com/v1/organizations/usage_report/messages`. Requires an Admin API key (`sk-ant-admin...`) — only org admins can create them. Does **not** apply to claude.ai subscription accounts. The 5-hour session metric is intentionally empty for this source because the concept doesn't exist for API-billed usage.
 
 ## Install (development, WSL on Windows)

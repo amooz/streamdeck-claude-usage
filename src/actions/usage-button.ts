@@ -52,6 +52,14 @@ export class UsageButton extends SingletonAction<UsageButtonSettings> {
 	}
 
 	private startInstance(id: string, key: KeyAction<UsageButtonSettings>, settings: ResolvedSettings): void {
+		// Surface a real error instead of silently falling back to local-logs:
+		// if the user picked admin-api but hasn't supplied a key, the button
+		// would otherwise read from JSONL files while claiming the wrong source.
+		if (settings.source === "admin-api" && !settings.adminApiKey) {
+			void this.paintError(key, { status: 401, message: "missing admin key" } as never);
+			this.instances.set(id, { poller: new Poller(async () => {}, { intervalMs: 60_000 }), settings });
+			return;
+		}
 		const source = this.makeSource(settings);
 		const tick = async (): Promise<void> => {
 			const snapshot = await source.fetch();
