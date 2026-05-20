@@ -5,6 +5,9 @@ node_modules/
 *.sdPlugin/bin
 *.sdPlugin/logs
 
+# Packaged distributable
+dist/
+
 # Test/coverage output
 coverage/
 .vitest-cache/

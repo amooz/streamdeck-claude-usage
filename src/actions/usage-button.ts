@@ -7,6 +7,7 @@ import {
 	type WillDisappearEvent
 } from "@elgato/streamdeck";
 
+import { reasonForError, renderError } from "../render/error-renderer.js";
 import { renderButton } from "../render/index.js";
 import { bufferToDataUri } from "../render/text-renderer.js";
 import { AdminApiSource } from "../sources/admin-api-source.js";
@@ -59,8 +60,7 @@ export class UsageButton extends SingletonAction<UsageButtonSettings> {
 		const poller = new Poller(tick, {
 			intervalMs: Math.max(1, settings.refreshSeconds) * 1000,
 			onError: (err) => {
-				void key.setTitle("ERR");
-				console.error("[claude-usage] fetch failed:", err);
+				void this.paintError(key, err);
 			}
 		});
 		this.instances.set(id, { poller, settings });
@@ -81,6 +81,12 @@ export class UsageButton extends SingletonAction<UsageButtonSettings> {
 	): Promise<void> {
 		const display = toDisplayConfig(settings);
 		const png = renderButton(snapshot, display);
+		await key.setImage(bufferToDataUri(png));
+		await key.setTitle("");
+	}
+
+	private async paintError(key: KeyAction<UsageButtonSettings>, err: unknown): Promise<void> {
+		const png = renderError(reasonForError(err));
 		await key.setImage(bufferToDataUri(png));
 		await key.setTitle("");
 	}

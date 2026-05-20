@@ -1,0 +1,34 @@
+name: test
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Use Node 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  cache: "npm"
+
+            # The project's .npmrc pins `min-release-age=7` and `engine-strict=true`,
+            # which both apply here too — we want CI to enforce the same rules a
+            # contributor's local install does.
+            - name: Install (lockfile-strict)
+              run: npm ci
+
+            - name: Typecheck
+              run: npm run typecheck
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Test with coverage
+              run: npm run coverage
