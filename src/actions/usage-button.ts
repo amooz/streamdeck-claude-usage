@@ -9,6 +9,7 @@ import {
 
 import { renderButton } from "../render/index.js";
 import { bufferToDataUri } from "../render/text-renderer.js";
+import { AdminApiSource } from "../sources/admin-api-source.js";
 import { LocalLogsSource } from "../sources/local-logs-source.js";
 import type { UsageSource } from "../sources/source.js";
 import type { UsageSnapshot } from "../types.js";
@@ -85,8 +86,9 @@ export class UsageButton extends SingletonAction<UsageButtonSettings> {
 	}
 
 	private makeSource(settings: ResolvedSettings): UsageSource {
-		// Admin-API source lands in Phase F; until then we fall back to local-logs
-		// so a misconfigured button still shows something useful instead of going blank.
+		if (settings.source === "admin-api" && settings.adminApiKey) {
+			return new AdminApiSource({ apiKey: settings.adminApiKey });
+		}
 		return new LocalLogsSource({
 			project: settings.project,
 			root: settings.projectsRoot ?? undefined

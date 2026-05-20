@@ -22,6 +22,12 @@ export function startOfLocalDay(at: Date): Date {
 	return d;
 }
 
+export function startOfUtcDay(at: Date): Date {
+	const d = new Date(at);
+	d.setUTCHours(0, 0, 0, 0);
+	return d;
+}
+
 /**
  * Anthropic's 5-hour session counter starts at the first message after a >=5h
  * idle gap and runs for 5h. This walks the timeline to find the most recent

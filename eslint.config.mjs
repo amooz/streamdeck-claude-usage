@@ -17,7 +17,15 @@ export default [
 				sourceType: "module"
 			},
 			globals: {
-				...globals.node
+				...globals.node,
+				// Web fetch globals shipped with Node 18+. globals.node doesn't include them.
+				fetch: "readonly",
+				Response: "readonly",
+				Request: "readonly",
+				Headers: "readonly",
+				RequestInit: "readonly",
+				ResponseInit: "readonly",
+				URLSearchParams: "readonly"
 			}
 		},
 		plugins: {
