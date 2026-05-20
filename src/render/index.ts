@@ -1,13 +1,13 @@
 import type { DisplayConfig, DisplayMode, UsageSnapshot } from "../types.js";
+import { CompositeRenderer } from "./composite-renderer.js";
 import { type Renderer } from "./renderer.js";
+import { RingRenderer } from "./ring-renderer.js";
 import { TextRenderer } from "./text-renderer.js";
 
 const renderers: Record<DisplayMode, Renderer> = {
 	text: new TextRenderer(),
-	// Ring + composite renderers land in Phase E; until then they fall back to text
-	// so a misconfigured button still shows something useful rather than going blank.
-	ring: new TextRenderer(),
-	"ring+text": new TextRenderer()
+	ring: new RingRenderer(),
+	"ring+text": new CompositeRenderer()
 };
 
 export function rendererFor(mode: DisplayMode): Renderer {
