@@ -1,0 +1,16 @@
+# Node.js
+node_modules/
+
+# Stream Deck build output (lives inside the .sdPlugin folder)
+*.sdPlugin/bin
+*.sdPlugin/logs
+
+# Test/coverage output
+coverage/
+.vitest-cache/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

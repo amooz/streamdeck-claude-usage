@@ -1,0 +1,45 @@
+{
+	"Name": "Claude Usage",
+	"Version": "0.1.0.0",
+	"Author": "Adam Mooz",
+	"Actions": [
+		{
+			"Name": "Claude Usage",
+			"UUID": "dev.mooz.streamdeck.claude-usage.usage",
+			"Icon": "imgs/actions/usage/icon",
+			"Tooltip": "Displays Claude usage statistics.",
+			"PropertyInspectorPath": "ui/usage-button.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/usage/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		}
+	],
+	"Category": "Claude Usage",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Stream Deck plugin that displays Claude usage statistics.",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "12"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"UUID": "dev.mooz.streamdeck.claude-usage"
+}

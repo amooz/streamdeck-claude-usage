@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+.vitest-cache/
+*.sdPlugin/bin/
+package-lock.json
+.claude/

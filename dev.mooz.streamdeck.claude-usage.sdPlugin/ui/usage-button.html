@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<title>Claude Usage Settings</title>
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+
+	<body>
+		<sdpi-item label="Display mode">
+			<sdpi-select setting="displayMode" default="text">
+				<option value="text">Text only</option>
+				<option value="ring">Ring only</option>
+				<option value="ring+text">Ring + text</option>
+			</sdpi-select>
+		</sdpi-item>
+
+		<sdpi-item label="Data source">
+			<sdpi-select setting="source" default="local-logs">
+				<option value="local-logs">Local Claude Code logs</option>
+				<option value="admin-api">Anthropic Admin API</option>
+			</sdpi-select>
+		</sdpi-item>
+	</body>
+</html>
