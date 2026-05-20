@@ -21,5 +21,50 @@
 				<option value="admin-api">Anthropic Admin API</option>
 			</sdpi-select>
 		</sdpi-item>
+
+		<sdpi-item label="Project (local-logs)">
+			<sdpi-textfield setting="project" default="all" placeholder="all"></sdpi-textfield>
+		</sdpi-item>
+
+		<sdpi-item label="Window">
+			<sdpi-select setting="metricWindow" default="session5h">
+				<option value="today">Today</option>
+				<option value="session5h">5-hour session</option>
+				<option value="weekly">Last 7 days</option>
+				<option value="allTime">All time</option>
+			</sdpi-select>
+		</sdpi-item>
+
+		<sdpi-item label="Model">
+			<sdpi-select setting="metricModel" default="opus">
+				<option value="all">All models</option>
+				<option value="opus">Opus</option>
+				<option value="sonnet">Sonnet</option>
+				<option value="haiku">Haiku</option>
+			</sdpi-select>
+		</sdpi-item>
+
+		<sdpi-item label="Metric">
+			<sdpi-select setting="metricField" default="outputTokens">
+				<option value="outputTokens">Output tokens</option>
+				<option value="inputTokens">Input tokens</option>
+				<option value="totalTokens">Total tokens</option>
+				<option value="cacheReadTokens">Cache read tokens</option>
+				<option value="cacheCreationTokens">Cache write tokens</option>
+				<option value="requests">Requests</option>
+			</sdpi-select>
+		</sdpi-item>
+
+		<sdpi-item label="Denominator (ring %)">
+			<sdpi-textfield setting="denominator" placeholder="e.g. 100000"></sdpi-textfield>
+		</sdpi-item>
+
+		<sdpi-item label="Custom label (optional)">
+			<sdpi-textfield setting="label" placeholder="auto"></sdpi-textfield>
+		</sdpi-item>
+
+		<sdpi-item label="Refresh (seconds)">
+			<sdpi-textfield setting="refreshSeconds" default="60" placeholder="60"></sdpi-textfield>
+		</sdpi-item>
 	</body>
 </html>

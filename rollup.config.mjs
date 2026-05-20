@@ -11,8 +11,15 @@ const sdPlugin = "dev.mooz.streamdeck.claude-usage.sdPlugin";
 /**
  * @type {import('rollup').RollupOptions}
  */
+// Native deps ship as separate npm packages; Rollup can't (and shouldn't) bundle
+// their .node binaries. Mark them external so the runtime resolves them through
+// node_modules at runtime instead — node_modules is copied alongside bin/ by
+// the sync-to-appdata step.
+const externalNative = ["@napi-rs/canvas", /^@napi-rs\/canvas-/];
+
 const config = {
 	input: "src/plugin.ts",
+	external: externalNative,
 	output: {
 		file: `${sdPlugin}/bin/plugin.js`,
 		sourcemap: isWatching,
