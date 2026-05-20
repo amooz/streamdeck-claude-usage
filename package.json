@@ -40,6 +40,7 @@
 		"vitest": "4.1.6"
 	},
 	"dependencies": {
-		"@elgato/streamdeck": "2.1.0"
+		"@elgato/streamdeck": "2.1.0",
+		"@napi-rs/canvas": "1.0.0"
 	}
 }
